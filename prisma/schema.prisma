@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id              String       @id @default(cuid())
+  name            String
+  type            String       @default("digital")
+  deliveryType    String       @default("link") // "file" or "link"
+  filePath        String?
+  accessLink      String?
+  description     String?
+  priceNormal     Float
+  pricePromo      Float
+  discountPercent Int          @default(0)
+  promoEndDate    DateTime?
+  hasBumpOffer    Boolean      @default(false)
+  bumpProductId   String?
+  bumpCustomTitle String?
+  bumpCustomPrice Float?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  landingPages    LandingPage[]
+  orders          Order[]
+}
+
+model MetaPixel {
+  id           String        @id @default(cuid())
+  name         String        // Nama label, misal: "Akun Iklan Utama", "Pixel Ebook Scale"
+  pixelId      String        // Meta/Facebook Pixel ID
+  capiToken    String?       // Meta Conversions API Access Token
+  testCode     String?       // Meta Test Event Code
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  landingPages LandingPage[]
+}
+
+model LandingPage {
+  id            String      @id @default(cuid())
+  title         String
+  slug          String      @unique
+  htmlContent   String
+  productId     String?
+  product       Product?    @relation(fields: [productId], references: [id])
+  metaPixelId   String?
+  metaPixel     MetaPixel?  @relation(fields: [metaPixelId], references: [id])
+  customPixelId String?     // ID Pixel jika input langsung tanpa pilih daftar
+  isLive        Boolean     @default(true)
+  viewsCount    Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  funnelLogs    FunnelLog[]
+}
+
+model BankAccount {
+  id            String   @id @default(cuid())
+  bankName      String
+  accountNumber String
+  accountHolder String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  orders        Order[]
+}
+
+model Order {
+  id               String       @id @default(cuid())
+  orderNumber      String       @unique
+  productId        String
+  product          Product      @relation(fields: [productId], references: [id])
+  customerName     String
+  customerWhatsapp String
+  customerEmail    String
+  bumpIncluded     Boolean      @default(false)
+  bumpProductId    String?
+  subtotal         Float
+  bumpPrice        Float        @default(0)
+  uniqueCode       Int          @default(0)
+  totalAmount      Float
+  status           String       @default("checkout") // "checkout", "paid", "cancelled"
+  bankAccountId    String?
+  bankAccount      BankAccount? @relation(fields: [bankAccountId], references: [id])
+  landingPageId    String?
+  deliveredAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model FunnelLog {
+  id               String       @id @default(cuid())
+  landingPageId    String?
+  landingPage      LandingPage? @relation(fields: [landingPageId], references: [id])
+  step             String       // "view", "checkout", "paid"
+  customerName     String?
+  customerWhatsapp String?
+  customerEmail    String?
+  ipAddress        String?
+  userAgent        String?
+  createdAt        DateTime     @default(now())
+}
+
+model Settings {
+  id         String   @id @default("app_settings")
+  appName    String   @default("SkyLink")
+  smtpHost   String?
+  smtpPort   Int?
+  smtpUser   String?
+  smtpPass   String?
+  smtpSender String?
+  updatedAt  DateTime @updatedAt
+}
