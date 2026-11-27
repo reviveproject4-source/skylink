@@ -80,59 +80,208 @@ export default function LpStudioEditor({
       ? customPixelId.trim()
       : activePixel?.pixelId || "";
 
-  // Validasi Aset Produk (Poin 5: Cek apakah produk memiliki link atau file)
+  // Validasi Aset Produk (Cek apakah produk memiliki link atau file)
   const selectedProduct = products.find((p) => p.id === productId);
   const isProductMissingAsset =
     selectedProduct &&
     !Boolean(selectedProduct.accessLink?.trim() || selectedProduct.filePath?.trim());
 
-  const [htmlContent, setHtmlContent] = useState(
-    initialLp?.htmlContent ||
-      `<!doctype html>
+  // Template Landing Page Dummy Kaya & Lengkap (Bukan layar kosong!)
+  const getRichDummyTemplate = (prodId: string, currentSlug: string) => `<!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Landing Page Produk Digital</title>
+  <title>${title || "Kuasai Skill Digital Hari Ini"}</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-b from-sky-50 to-white min-h-screen font-sans text-slate-800">
-  <div class="max-w-2xl mx-auto px-6 py-16 text-center">
-    <span class="inline-block px-3 py-1 bg-sky-100 text-sky-700 text-xs font-bold uppercase tracking-wider rounded-full mb-4">
-      Rilisan Baru
+<body class="bg-slate-50 font-sans text-slate-800 antialiased">
+  {/* Top Urgent Promo Bar */}
+  <div class="bg-gradient-to-r from-sky-600 via-sky-500 to-brand-600 text-white text-xs font-bold py-2.5 px-4 text-center tracking-wider uppercase">
+    ⚡ DISKON SPESIAL HARI INI: HEMAT HINGGA 67% + BONUS AKSES MATERI VIP SEUMUR HIDUP!
+  </div>
+
+  {/* Header Navbar */}
+  <nav class="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-sky-500/20">
+        SL
+      </div>
+      <span class="font-black text-base tracking-tight text-slate-900">Revive Project</span>
+    </div>
+    <span class="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full flex items-center gap-1.5">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+      Stok Promo Terbatas
     </span>
-    <h1 class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-      Kuasai Skill Digital Hari Ini
+  </nav>
+
+  {/* Hero Section */}
+  <header class="max-w-3xl mx-auto px-6 pt-8 pb-12 text-center">
+    <span class="inline-block px-3.5 py-1.5 rounded-full bg-sky-100 text-sky-700 text-xs font-extrabold uppercase tracking-wider mb-4 border border-sky-200">
+      ⭐ PANDUAN PRAKTIS & EKSKLUSIF 2026
+    </span>
+    <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+      Kuasai Skill Digital & Lipatgandakan Hasil Bisnis Anda
     </h1>
-    <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-      Akses materi premium eksklusif untuk melipatgandakan omset dan performa bisnis Anda.
+    <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
+      Panduan langkah-demi-langkah yang dirancang khusus untuk membantu Anda membangun funnel penjualan otomatis dan menghasilkan penjualan produk digital secara konsisten.
     </p>
 
-    <!-- Pricing Card -->
-    <div class="mt-8 bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-left">
-      <div class="flex items-baseline justify-between border-b pb-4 mb-6">
-        <div>
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Harga Spesial</span>
-          <span class="text-3xl font-black text-sky-600">Rp 99.000</span>
-          <span class="text-sm text-slate-400 line-through ml-2">Rp 299.000</span>
+    {/* Hero Mockup Card */}
+    <div class="mt-8 p-6 sm:p-8 bg-gradient-to-tr from-sky-500 to-brand-600 rounded-3xl text-white shadow-2xl shadow-sky-500/20 text-left relative overflow-hidden">
+      <div class="relative z-10 space-y-4">
+        <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full backdrop-blur-xs">
+          📦 All-in-One Digital Package
+        </span>
+        <h3 class="text-2xl sm:text-3xl font-extrabold leading-snug">
+          Materi Lengkap: Video HD + File Template + Akses Lifetime
+        </h3>
+        <p class="text-xs sm:text-sm text-sky-100 leading-relaxed max-w-xl">
+          Tinggal ikuti instruksi, duplikasi template siap pakai, dan jalankan campaign penjualan Anda dalam hitungan jam.
+        </p>
+        <div class="pt-2 flex flex-wrap gap-2 text-xs font-bold text-sky-900">
+          <span class="bg-white px-3 py-1 rounded-lg">✓ Akses Seumur Hidup</span>
+          <span class="bg-white px-3 py-1 rounded-lg">✓ Gratis Pembaruan Materi</span>
+          <span class="bg-white px-3 py-1 rounded-lg">✓ Garansi Akses Otomatis</span>
         </div>
-        <span class="text-xs bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full">Hemat 67%</span>
+      </div>
+      <div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+    </div>
+  </header>
+
+  {/* Benefit Points Grid */}
+  <section class="max-w-3xl mx-auto px-6 py-6">
+    <h2 class="text-xl font-bold text-center text-slate-900 mb-6">
+      Mengapa Materi Ini Wajib Anda Miliki?
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-base mb-3">
+          🚀
+        </div>
+        <h4 class="font-bold text-sm text-slate-900">Praktik Langsung</h4>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Bukan sekadar teori. Semua langkah dipandu dari awal hingga kampanye siap jalan.
+        </p>
       </div>
 
-      <ul class="space-y-3 text-sm text-slate-700 mb-8">
-        <li class="flex items-center gap-2">✅ Full Video Materi HD + Modul Praktek</li>
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-base mb-3">
+          ⚡
+        </div>
+        <h4 class="font-bold text-sm text-slate-900">Hemat Waktu</h4>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Gunakan blueprint yang sudah teruji sehingga Anda terhindar dari trial-error yang membuang waktu.
+        </p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-base mb-3">
+          🤝
+        </div>
+        <h4 class="font-bold text-sm text-slate-900">Support Personal</h4>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Tim CS resmi kami siap membantu kendala akses materi via WhatsApp kapan saja.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* Social Proof / Testimonial */}
+  <section class="max-w-3xl mx-auto px-6 py-8">
+    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+      <div class="flex items-center gap-1 text-amber-400 text-sm">
+        ★★★★★ <span class="text-xs font-bold text-slate-700 ml-2">Rating 4.9 dari 1.250+ Pembeli Puas</span>
+      </div>
+      <p class="text-sm text-slate-700 italic leading-relaxed">
+        &ldquo;Materinya sangat padat dan tidak bertele-tele. Dalam 3 hari saya berhasil meluncurkan halaman landing page sendiri dan omset langsung naik pesat. Sangat direkomendasikan!&rdquo;
+      </p>
+      <div class="flex items-center gap-3 pt-1">
+        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700 text-sm">
+          RP
+        </div>
+        <div>
+          <h5 class="font-bold text-xs text-slate-900">Rian Pratama</h5>
+          <span class="text-[11px] text-slate-400">Digital Entrepreneur</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* MAIN OFFER & PRICING CARD (Trigger Event InitiateCheckout) */}
+  <section class="max-w-2xl mx-auto px-6 py-10">
+    <div class="bg-white rounded-3xl p-8 border-2 border-sky-400 shadow-2xl text-center space-y-6 relative overflow-hidden">
+      <div class="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black uppercase tracking-wider py-1 px-8 rotate-45 translate-x-6 translate-y-3">
+        Diskon 67%
+      </div>
+
+      <div>
+        <span class="text-xs font-extrabold text-sky-600 uppercase tracking-wider block">
+          Penawaran Terbatas Hari Ini
+        </span>
+        <h3 class="text-2xl font-black text-slate-900 mt-1">
+          Investasi Terbaik untuk Pertumbuhan Bisnis Anda
+        </h3>
+      </div>
+
+      <div class="p-4 bg-sky-50 rounded-2xl border border-sky-100 flex items-baseline justify-center gap-3">
+        <span class="text-base line-through text-slate-400 font-semibold">Rp 299.000</span>
+        <span class="text-4xl font-black text-sky-600">Rp 99.000</span>
+      </div>
+
+      <ul class="space-y-3 text-left text-xs sm:text-sm text-slate-700 max-w-md mx-auto">
+        <li class="flex items-center gap-2">✅ Full Video Materi HD Eksklusif</li>
         <li class="flex items-center gap-2">✅ Akses Lifetime (Seumur Hidup)</li>
-        <li class="flex items-center gap-2">✅ Dukungan Konsultasi Personal</li>
+        <li class="flex items-center gap-2">✅ Gratis Seluruh Update Materi Mendatang</li>
+        <li class="flex items-center gap-2">✅ Pengiriman Link Akses Otomatis via Email & WA</li>
       </ul>
 
-      <a id="btn-order" href="/checkout/${products[0]?.id || ''}?lp=${slug}" class="block w-full py-4 bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-center rounded-2xl shadow-lg shadow-sky-500/25 transition-all text-lg">
-        🔥 Beli Sekarang (Akses Instan)
-      </a>
-      <p class="text-center text-xs text-slate-400 mt-2.5">Garansi 100% materi terupdate & pengiriman otomatis</p>
+      {/* TOMBOL PEMBELIAN: SAYA MAU BELI (TRIGGER INITIAL CHECKOUT) */}
+      <div class="pt-2">
+        <a
+          id="btn-order"
+          href="/checkout/${prodId || products[0]?.id || ''}?lp=${currentSlug || slug}"
+          class="btn-order block w-full py-4 px-6 bg-gradient-to-r from-sky-600 to-brand-600 hover:from-sky-700 hover:to-brand-700 text-white font-extrabold text-center rounded-2xl shadow-xl shadow-sky-500/30 transition-all text-base sm:text-lg hover:scale-[1.02] transform cursor-pointer"
+        >
+          🔥 SAYA MAU BELI SEKARANG (AKSES INSTAN) 🚀
+        </a>
+        <p class="text-[11px] text-slate-400 mt-2.5">
+          🔒 Pembayaran 100% Aman • Materi Otomatis Dikirim Langsung ke Email Anda
+        </p>
+      </div>
     </div>
-  </div>
+  </section>
+
+  {/* FAQ Section */}
+  <section class="max-w-2xl mx-auto px-6 pb-16 space-y-3">
+    <h3 class="text-lg font-bold text-center text-slate-900 mb-4">
+      Pertanyaan yang Sering Diajukan
+    </h3>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 text-xs text-slate-600">
+      <strong class="text-slate-900 block mb-1">Bagaimana cara mengakses materi setelah pembayaran?</strong>
+      Link materi dan invoice resmi akan langsung otomatis dikirimkan ke alamat email Anda begitu transfer pembayaran terverifikasi.
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 text-xs text-slate-600">
+      <strong class="text-slate-900 block mb-1">Apakah ada grup bantuan jika ada kendala?</strong>
+      Tentu saja! Anda dapat langsung menghubungi layanan WhatsApp Customer Support kami yang siap membantu.
+    </div>
+  </section>
+
+  {/* Footer */}
+  <footer class="border-t border-slate-200 py-6 text-center text-xs text-slate-400 bg-white">
+    <p>&copy; 2026 Revive Project. All rights reserved.</p>
+  </footer>
 </body>
-</html>`
+</html>`;
+
+  // Cek apakah konten awal kosong. Jika kosong, selalu gunakan Template Dummy Lengkap!
+  const isBlankOrEmpty =
+    !initialLp?.htmlContent || initialLp.htmlContent.trim().length === 0;
+
+  const [htmlContent, setHtmlContent] = useState(
+    isBlankOrEmpty
+      ? getRichDummyTemplate(productId, slug)
+      : initialLp.htmlContent
   );
 
   const [devicePreview, setDevicePreview] = useState<"desktop" | "mobile">(
@@ -307,6 +456,20 @@ export default function LpStudioEditor({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Muat template Landing Page Dummy lengkap (Hero, Benefit, Testimoni, CTA & FAQ)?")) {
+                setHtmlContent(getRichDummyTemplate(productId, slug));
+              }
+            }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            title="Muat template Landing Page Dummy siap pakai"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+            <span>Muat LP Dummy</span>
+          </button>
+
           <button
             onClick={() => fileInputRef.current?.click()}
             className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors inline-flex items-center gap-1.5"

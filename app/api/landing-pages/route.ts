@@ -79,8 +79,8 @@ export async function POST(req: Request) {
       <p class="text-3xl font-black text-sky-600 mt-1">Rp 99.000</p>
       
       <div class="mt-6">
-        <a href="/checkout/${productId || ''}?lp=${cleanSlug}" class="block w-full py-4 px-6 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-2xl shadow-lg shadow-sky-500/25 transition-all text-center">
-          👉 Beli Sekarang (Akses Instan)
+        <a id="btn-order" href="/checkout/${productId || ''}?lp=${cleanSlug}" class="btn-order block w-full py-4 px-6 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-2xl shadow-lg shadow-sky-500/25 transition-all text-center text-lg">
+          🔥 Saya Mau Beli Sekarang (Akses Instan) 🚀
         </a>
       </div>
     </div>

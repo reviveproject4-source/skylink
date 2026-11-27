@@ -108,7 +108,7 @@ export default function ProductListClient({
         </button>
       </div>
 
-      {/* Product List Table / Grid */}
+      {/* Product List Table */}
       {products.length === 0 ? (
         <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center shadow-xs">
           <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -130,139 +130,183 @@ export default function ProductListClient({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((p) => {
-            const isPromoActive = p.promoEndDate
-              ? new Date(p.promoEndDate) > new Date()
-              : true;
+        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-400 text-xs uppercase font-bold tracking-wider">
+                  <th className="py-4 pl-6 pr-4">Produk Digital</th>
+                  <th className="py-4 px-4">Status Aset Produk</th>
+                  <th className="py-4 px-4">Harga & Diskon</th>
+                  <th className="py-4 px-4">Bump Offer</th>
+                  <th className="py-4 px-4">Link Checkout</th>
+                  <th className="py-4 pr-6 pl-4 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {products.map((p) => {
+                  const isPromoActive = p.promoEndDate
+                    ? new Date(p.promoEndDate) > new Date()
+                    : true;
+                  const hasAsset = Boolean(p.accessLink?.trim() || p.filePath?.trim());
 
-            return (
-              <div
-                key={p.id}
-                className="bg-white rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all p-6 flex flex-col justify-between group relative overflow-hidden"
-              >
-                {/* Header Tag */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200/60 flex items-center gap-1">
-                      {p.deliveryType === "file" ? (
-                        <>
-                          <FileText className="w-3 h-3" /> File Upload
-                        </>
-                      ) : (
-                        <>
-                          <Link2 className="w-3 h-3" /> Link Akses
-                        </>
-                      )}
-                    </span>
+                  return (
+                    <tr
+                      key={p.id}
+                      className="hover:bg-slate-50/80 transition-colors group"
+                    >
+                      {/* 1. Detail Produk */}
+                      <td className="py-4 pl-6 pr-4 max-w-xs">
+                        <div className="flex items-start gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold shrink-0 border border-brand-100/80 mt-0.5">
+                            {p.deliveryType === "file" ? (
+                              <FileText className="w-4 h-4" />
+                            ) : (
+                              <Link2 className="w-4 h-4" />
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-sm text-slate-900 group-hover:text-brand-600 transition-colors leading-snug">
+                              {p.name}
+                            </h4>
+                            <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+                              {p.description || "Tidak ada deskripsi tambahan"}
+                            </p>
+                            <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                              {p.deliveryType === "file" ? "File Upload" : "Link Akses (URL)"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
 
-                    {p.hasBumpOffer && (
-                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> Bump Offer
-                      </span>
-                    )}
-                  </div>
+                      {/* 2. Status Aset Produk (Peringatan Merah jika kosong) */}
+                      <td className="py-4 px-4">
+                        {hasAsset ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Aset Terisi (Siap Kirim)</span>
+                            </span>
+                            {p.accessLink && (
+                              <span className="text-[11px] text-slate-400 block truncate max-w-[200px]" title={p.accessLink}>
+                                🔗 {p.accessLink}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="p-2 bg-red-50 border border-red-300 rounded-xl text-xs text-red-600 font-bold inline-flex items-center gap-1.5 animate-pulse max-w-[240px]">
+                            <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                            <span>⚠️ Peringatan: Produk file atau link belum terisi!</span>
+                          </div>
+                        )}
+                      </td>
 
-                  <h3 className="font-bold text-base text-slate-800 line-clamp-2 leading-snug group-hover:text-brand-600 transition-colors">
-                    {p.name}
-                  </h3>
+                      {/* 3. Harga & Promo */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="space-y-0.5">
+                          <span className="text-xs line-through text-slate-400 block font-medium">
+                            {formatRupiah(p.priceNormal)}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-extrabold text-brand-700">
+                              {formatRupiah(p.pricePromo)}
+                            </span>
+                            {p.discountPercent > 0 && (
+                              <span className="text-[10px] font-bold bg-red-100 text-red-700 px-1.5 py-0.2 rounded">
+                                -{p.discountPercent}%
+                              </span>
+                            )}
+                          </div>
+                          {p.promoEndDate && (
+                            <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              <span className={isPromoActive ? "text-slate-500" : "text-red-500 font-bold"}>
+                                s/d {formatDate(p.promoEndDate)}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                      </td>
 
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                    {p.description || "Tidak ada deskripsi tambahan"}
-                  </p>
+                      {/* 4. Bump Offer */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        {p.hasBumpOffer ? (
+                          <div className="space-y-0.5">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
+                              <Sparkles className="w-3 h-3 text-emerald-600" />
+                              <span>+ Bump Offer</span>
+                            </span>
+                            {p.bumpCustomPrice ? (
+                              <span className="text-[11px] text-slate-500 block font-medium">
+                                {formatRupiah(p.bumpCustomPrice)}
+                              </span>
+                            ) : null}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-400 font-medium">-</span>
+                        )}
+                      </td>
 
-                  {/* Peringatan Aset Kosong */}
-                  {!Boolean(p.accessLink?.trim() || p.filePath?.trim()) && (
-                    <div className="mt-2.5 p-2.5 bg-red-50 border-2 border-red-400 rounded-xl flex items-center gap-2 text-xs text-red-600 font-bold">
-                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
-                      <span className="text-red-600 font-bold">
-                        ⚠️ Peringatan: Produk file atau link belum terisi!
-                      </span>
-                    </div>
-                  )}
+                      {/* 5. Link Checkout */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => copyCheckoutLink(p.id)}
+                            className="py-1.5 px-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-brand-50 text-slate-700 hover:text-brand-700 border border-slate-200 hover:border-brand-300 transition-colors inline-flex items-center gap-1.5"
+                            title="Salin link form checkout"
+                          >
+                            {copiedId === p.id ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                <span className="text-emerald-700">Tersalin!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Salin Link</span>
+                              </>
+                            )}
+                          </button>
+                          <Link
+                            href={`/checkout/${p.id}`}
+                            target="_blank"
+                            className="p-1.5 rounded-xl text-slate-400 hover:text-brand-600 hover:bg-slate-100 transition-colors"
+                            title="Buka form checkout di tab baru"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
+                        </div>
+                      </td>
 
-                  {/* Pricing info */}
-                  <div className="mt-4 p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-xs line-through text-slate-400 block font-medium">
-                        {formatRupiah(p.priceNormal)}
-                      </span>
-                      <span className="text-lg font-black text-brand-700">
-                        {formatRupiah(p.pricePromo)}
-                      </span>
-                    </div>
-                    {p.discountPercent > 0 && (
-                      <span className="text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-lg">
-                        Hemat {p.discountPercent}%
-                      </span>
-                    )}
-                  </div>
+                      {/* 6. Aksi */}
+                      <td className="py-4 pr-6 pl-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => {
+                              setEditingProduct(p);
+                              setIsModalOpen(true);
+                            }}
+                            className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                            title="Edit data produk"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
 
-                  {/* Promo deadline badge */}
-                  {p.promoEndDate && (
-                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      <span>
-                        Promo s/d:{" "}
-                        <strong className={isPromoActive ? "text-slate-700" : "text-red-500"}>
-                          {formatDate(p.promoEndDate)}
-                        </strong>
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer Actions */}
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-                  <button
-                    onClick={() => copyCheckoutLink(p.id)}
-                    className="flex-1 py-2 px-3 rounded-xl text-xs font-bold bg-slate-50 hover:bg-brand-50 text-slate-700 hover:text-brand-700 border border-slate-200 hover:border-brand-300 transition-colors inline-flex items-center justify-center gap-1.5"
-                    title="Salin link checkout"
-                  >
-                    {copiedId === p.id ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-700">Tersalin!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        <span>Link Checkout</span>
-                      </>
-                    )}
-                  </button>
-
-                  <Link
-                    href={`/checkout/${p.id}`}
-                    target="_blank"
-                    className="p-2 rounded-xl text-slate-400 hover:text-brand-600 hover:bg-slate-100 transition-colors"
-                    title="Buka form checkout"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </Link>
-
-                  <button
-                    onClick={() => {
-                      setEditingProduct(p);
-                      setIsModalOpen(true);
-                    }}
-                    className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-                    title="Edit produk"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(p.id, p.name)}
-                    className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                    title="Hapus produk"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+                          <button
+                            onClick={() => handleDelete(p.id, p.name)}
+                            className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            title="Hapus produk"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

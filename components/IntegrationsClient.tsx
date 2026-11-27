@@ -136,7 +136,7 @@ export default function IntegrationsClient({
         </button>
       </div>
 
-      {/* Pixels Listing */}
+      {/* Pixels Listing Table */}
       {pixels.length === 0 ? (
         <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center shadow-xs">
           <div className="w-12 h-12 rounded-2xl bg-[#1877f2]/10 text-[#1877f2] flex items-center justify-center mx-auto mb-3 font-bold text-xl">
@@ -157,90 +157,114 @@ export default function IntegrationsClient({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pixels.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-[#1877f2] text-white flex items-center justify-center font-bold text-sm shadow-xs">
-                      f
-                    </div>
-                    <span className="text-xs font-bold text-slate-500">
-                      Meta Pixel
-                    </span>
-                  </div>
-
-                  {p.capiToken ? (
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" /> CAPI Aktif
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                      Browser Only
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="font-extrabold text-base text-slate-900 leading-snug">
-                  {p.name}
-                </h3>
-
-                {/* Pixel ID */}
-                <div className="mt-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                      Pixel ID
-                    </span>
-                    <span className="font-mono text-sm font-bold text-brand-700">
-                      {p.pixelId}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => copyPixelId(p.pixelId, p.id)}
-                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-brand-600 transition-colors"
-                    title="Salin Pixel ID"
+        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-400 text-xs uppercase font-bold tracking-wider">
+                  <th className="py-4 pl-6 pr-4">Akun / Label Pixel</th>
+                  <th className="py-4 px-4">Meta Pixel ID</th>
+                  <th className="py-4 px-4">Status Token CAPI</th>
+                  <th className="py-4 px-4">Penggunaan di LP</th>
+                  <th className="py-4 pr-6 pl-4 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {pixels.map((p) => (
+                  <tr
+                    key={p.id}
+                    className="hover:bg-slate-50/80 transition-colors group"
                   >
-                    {copiedId === p.id ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    ) : (
-                      <span className="text-[10px] font-bold">Salin</span>
-                    )}
-                  </button>
-                </div>
+                    {/* 1. Nama Akun / Label Pixel */}
+                    <td className="py-4 pl-6 pr-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-[#1877f2] text-white flex items-center justify-center font-bold text-base shadow-xs shrink-0">
+                          f
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-900 group-hover:text-brand-600 transition-colors">
+                            {p.name}
+                          </h4>
+                          <span className="text-[11px] text-slate-400 block">
+                            Meta Ads Account
+                          </span>
+                        </div>
+                      </div>
+                    </td>
 
-                {/* Connected LP info */}
-                <div className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-slate-400" />
-                  <span>
-                    Digunakan oleh:{" "}
-                    <strong>{p._count?.landingPages || 0} Landing Page</strong>
-                  </span>
-                </div>
-              </div>
+                    {/* 2. Pixel ID */}
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <div className="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                        <span className="font-mono text-xs font-bold text-brand-700">
+                          {p.pixelId}
+                        </span>
+                        <button
+                          onClick={() => copyPixelId(p.pixelId, p.id)}
+                          className="text-slate-400 hover:text-brand-600 transition-colors"
+                          title="Salin Pixel ID"
+                        >
+                          {copiedId === p.id ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <span className="text-[10px] font-semibold">Salin</span>
+                          )}
+                        </button>
+                      </div>
+                    </td>
 
-              {/* Action Buttons */}
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  onClick={() => openModal(p)}
-                  className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                  title="Edit pixel"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(p.id, p.name)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                  title="Hapus pixel"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+                    {/* 3. Status Token CAPI */}
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      {p.capiToken ? (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Token CAPI Terpasang Otomatis</span>
+                          </span>
+                          {p.testCode && (
+                            <span className="text-[10px] text-slate-400 block font-mono">
+                              Test Code: {p.testCode}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
+                          Browser Pixel Only (Tanpa CAPI)
+                        </span>
+                      )}
+                    </td>
+
+                    {/* 4. Penggunaan di LP */}
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 border border-brand-200/70 text-xs font-bold">
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>{p._count?.landingPages || 0} Landing Page</span>
+                      </span>
+                    </td>
+
+                    {/* 5. Aksi */}
+                    <td className="py-4 pr-6 pl-4 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => openModal(p)}
+                          className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                          title="Edit konfigurasi pixel"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id, p.name)}
+                          className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          title="Hapus pixel"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
