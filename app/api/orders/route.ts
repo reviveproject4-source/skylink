@@ -10,6 +10,7 @@ export async function GET() {
       include: {
         product: true,
         bankAccount: true,
+        landingPage: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -66,15 +67,16 @@ export async function POST(req: Request) {
     const userAgent = headersList.get("user-agent") || undefined;
     const ip = headersList.get("x-forwarded-for") || undefined;
 
-    // Find assigned Meta Pixel for this specific LP / Product
+    // Find assigned LP & Meta Pixel for this order
+    let assignedLandingPage = null;
     let assignedMetaPixel = null;
     if (landingPageSlug) {
-      const lp = await prisma.landingPage.findUnique({
+      assignedLandingPage = await prisma.landingPage.findUnique({
         where: { slug: landingPageSlug },
         include: { metaPixel: true },
       });
-      if (lp?.metaPixel) {
-        assignedMetaPixel = lp.metaPixel;
+      if (assignedLandingPage?.metaPixel) {
+        assignedMetaPixel = assignedLandingPage.metaPixel;
       }
     }
 
@@ -102,10 +104,12 @@ export async function POST(req: Request) {
           totalAmount,
           status: "checkout",
           bankAccountId: bankAccountId || null,
+          landingPageId: assignedLandingPage?.id || null,
         },
         include: {
           product: true,
           bankAccount: true,
+          landingPage: true,
         },
       }),
       // Log to Funnel (Checkout level)

@@ -77,6 +77,7 @@ export default async function PublicLandingPageRoute({
   var capiToken = ${JSON.stringify(capiToken || "")};
   var testCode = ${JSON.stringify(testCode || "")};
   var lpId = ${JSON.stringify(lp.id)};
+  var lpSlug = ${JSON.stringify(lp.slug)};
   var productName = ${JSON.stringify(productName)};
   var productPrice = ${productPrice};
 
@@ -124,6 +125,16 @@ export default async function PublicLandingPageRoute({
 
       if (isCta) {
         el.setAttribute('data-capi-bound', 'true');
+
+        // Otomatis pastikan link checkout membawa parameter ?lp=slug
+        if (el.tagName === 'A' && el.getAttribute('href')) {
+          var curHref = el.getAttribute('href');
+          if (curHref.indexOf('/checkout') !== -1 && curHref.indexOf('lp=') === -1) {
+            var sepChar = curHref.indexOf('?') !== -1 ? '&' : '?';
+            el.setAttribute('href', curHref + sepChar + 'lp=' + encodeURIComponent(lpSlug));
+          }
+        }
+
         el.addEventListener('click', function() {
           // Trigger Meta Pixel di Browser
           if (window.fbq && pixelId) {
@@ -175,6 +186,21 @@ export default async function PublicLandingPageRoute({
 `;
 
   let finalHtml = lp.htmlContent;
+
+  // Auto-inject ?lp=slug ke semua link internal /checkout/ agar pelacakan sumber iklan 100% akurat
+  try {
+    finalHtml = finalHtml.replace(
+      /href=(["'])([^"']*\/checkout\/[^"']*)(\1)/gi,
+      (match, quote, url) => {
+        if (url.includes("lp=")) return match;
+        const sep = url.includes("?") ? "&" : "?";
+        return `href=${quote}${url}${sep}lp=${encodeURIComponent(lp.slug)}${quote}`;
+      }
+    );
+  } catch (e) {
+    console.error("Link injection error:", e);
+  }
+
   if (finalHtml.includes("</body>")) {
     finalHtml = finalHtml.replace("</body>", `${trackingScript}\n</body>`);
   } else if (finalHtml.includes("</html>")) {

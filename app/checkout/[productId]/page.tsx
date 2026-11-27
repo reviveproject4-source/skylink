@@ -105,6 +105,7 @@ export default async function CheckoutPage({
         bumpProduct={serializedBump}
         bankAccounts={bankAccounts}
         pixelId={assignedPixelId}
+        lpSlug={searchParams?.lp}
       />
     </div>
   );

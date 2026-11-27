@@ -41,6 +41,11 @@ interface Order {
     accessLink?: string | null;
     filePath?: string | null;
   } | null;
+  landingPage?: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
 }
 
 interface FunnelItem {
@@ -458,6 +463,22 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
                         <span className="inline-block mt-1 text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold">
                           + Bump Offer
                         </span>
+                      )}
+                      {ord.landingPage ? (
+                        <div className="mt-1">
+                          <span
+                            className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded"
+                            title={`Asal Iklan / LP: ${ord.landingPage.title}`}
+                          >
+                            📍 /lp/{ord.landingPage.slug}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="mt-1">
+                          <span className="inline-flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">
+                            📍 Langsung (Direct)
+                          </span>
+                        </div>
                       )}
                     </td>
 

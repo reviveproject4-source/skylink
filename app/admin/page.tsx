@@ -38,6 +38,7 @@ export default async function AdminDashboardPage() {
       },
       include: {
         product: true,
+        landingPage: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -302,11 +303,29 @@ export default async function AdminDashboardPage() {
                         </a>
                       </td>
                       <td className="py-3 font-medium text-slate-600">
-                        {ord.product?.name || "Produk Digital"}
-                        {ord.bumpIncluded && (
-                          <span className="ml-1.5 text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">
-                            +Bump
-                          </span>
+                        <div>
+                          <span>{ord.product?.name || "Produk Digital"}</span>
+                          {ord.bumpIncluded && (
+                            <span className="ml-1.5 text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">
+                              +Bump
+                            </span>
+                          )}
+                        </div>
+                        {ord.landingPage ? (
+                          <div className="mt-1">
+                            <span
+                              className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded"
+                              title={`Asal Iklan / LP: ${ord.landingPage.title}`}
+                            >
+                              📍 /lp/{ord.landingPage.slug}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="mt-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">
+                              📍 Langsung (Direct)
+                            </span>
+                          </div>
                         )}
                       </td>
                       <td className="py-3 font-bold text-slate-900">

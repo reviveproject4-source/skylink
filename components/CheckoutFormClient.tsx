@@ -51,6 +51,7 @@ interface CheckoutFormClientProps {
   bumpProduct?: BumpProduct | null;
   bankAccounts: BankAccount[];
   pixelId?: string | null;
+  lpSlug?: string | null;
 }
 
 export default function CheckoutFormClient({
@@ -58,6 +59,7 @@ export default function CheckoutFormClient({
   bumpProduct,
   bankAccounts,
   pixelId,
+  lpSlug,
 }: CheckoutFormClientProps) {
   const [customerName, setCustomerName] = useState("");
   const [customerWhatsapp, setCustomerWhatsapp] = useState("");
@@ -141,6 +143,7 @@ export default function CheckoutFormClient({
           customerEmail,
           bumpIncluded,
           bankAccountId: selectedBankId || null,
+          landingPageSlug: lpSlug || null,
         }),
       });
 
