@@ -33,6 +33,7 @@ export async function PUT(
     if (status === "paid") {
       await prisma.funnelLog.create({
         data: {
+          landingPageId: order.landingPageId || null,
           step: "paid",
           customerName: order.customerName,
           customerWhatsapp: order.customerWhatsapp,
@@ -45,7 +46,7 @@ export async function PUT(
 
       const refreshedOrder = await prisma.order.findUnique({
         where: { id: params.id },
-        include: { product: true, bankAccount: true },
+        include: { product: true, bankAccount: true, landingPage: true },
       });
 
       return NextResponse.json({
@@ -56,7 +57,7 @@ export async function PUT(
 
     const refreshed = await prisma.order.findUnique({
       where: { id: params.id },
-      include: { product: true, bankAccount: true },
+      include: { product: true, bankAccount: true, landingPage: true },
     });
 
     return NextResponse.json(refreshed);

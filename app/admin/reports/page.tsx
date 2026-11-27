@@ -4,9 +4,14 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function ReportsAdminPage() {
+export default async function ReportsAdminPage({
+  searchParams,
+}: {
+  searchParams?: { lp?: string };
+}) {
   let orders: any[] = [];
   let funnelViews: any[] = [];
+  let landingPages: any[] = [];
   let totalRevenue = 0;
 
   try {
@@ -17,6 +22,16 @@ export default async function ReportsAdminPage() {
         landingPage: true,
       },
       orderBy: { createdAt: "desc" },
+    });
+
+    landingPages = await prisma.landingPage.findMany({
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        viewsCount: true,
+      },
+      orderBy: { updatedAt: "desc" },
     });
 
     funnelViews = await prisma.funnelLog.findMany({
@@ -47,6 +62,8 @@ export default async function ReportsAdminPage() {
         <ReportsListClient
           orders={serializedOrders}
           funnelViews={serializedViews}
+          landingPages={landingPages}
+          initialLpFilter={searchParams?.lp || "all"}
         />
       </main>
     </div>

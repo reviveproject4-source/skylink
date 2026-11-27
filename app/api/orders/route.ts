@@ -115,6 +115,7 @@ export async function POST(req: Request) {
       // Log to Funnel (Checkout level)
       prisma.funnelLog.create({
         data: {
+          landingPageId: assignedLandingPage?.id || null,
           step: "checkout",
           customerName,
           customerWhatsapp,

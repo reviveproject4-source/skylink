@@ -57,19 +57,31 @@ interface FunnelItem {
   createdAt: string;
 }
 
+interface LandingPageOption {
+  id: string;
+  title: string;
+  slug: string;
+  viewsCount: number;
+}
+
 interface ReportsListClientProps {
   orders: Order[];
   funnelViews: FunnelItem[];
+  landingPages?: LandingPageOption[];
+  initialLpFilter?: string;
 }
 
 export default function ReportsListClient({
   orders: initialOrders,
   funnelViews,
+  landingPages = [],
+  initialLpFilter = "all",
 }: ReportsListClientProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [activeTab, setActiveTab] = useState<
     "all" | "view" | "checkout" | "paid" | "failed_delivery"
   >("all");
+  const [lpFilter, setLpFilter] = useState<string>(initialLpFilter);
   const [search, setSearch] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [waSendingId, setWaSendingId] = useState<string | null>(null);
@@ -203,13 +215,22 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
     window.open(targetUrl, "_blank");
   };
 
+  // Scope orders by selected Landing Page filter
+  const lpScopedOrders = orders.filter((o) => {
+    if (lpFilter === "all") return true;
+    if (lpFilter === "direct") return !o.landingPage;
+    return o.landingPage?.slug === lpFilter;
+  });
+
   // Filtered orders
-  const filteredOrders = orders.filter((o) => {
+  const filteredOrders = lpScopedOrders.filter((o) => {
     const matchSearch =
       o.customerName.toLowerCase().includes(search.toLowerCase()) ||
       o.customerWhatsapp.includes(search) ||
       o.customerEmail.toLowerCase().includes(search.toLowerCase()) ||
-      o.orderNumber.toLowerCase().includes(search.toLowerCase());
+      o.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
+      (o.landingPage?.title || "").toLowerCase().includes(search.toLowerCase()) ||
+      (o.landingPage?.slug || "").toLowerCase().includes(search.toLowerCase());
 
     if (!matchSearch) return false;
     if (activeTab === "all") return true;
@@ -220,12 +241,19 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
     return false;
   });
 
-  const countViews = funnelViews.length;
-  const countCheckouts = orders.filter((o) => o.status === "checkout").length;
-  const countPaid = orders.filter((o) => o.status === "paid").length;
-  const countFailedDelivery = orders.filter(
+  const selectedLpObj = landingPages.find((lp) => lp.slug === lpFilter);
+  const countViews =
+    lpFilter === "all"
+      ? landingPages.reduce((sum, lp) => sum + (lp.viewsCount || 0), 0) || funnelViews.length
+      : lpFilter === "direct"
+      ? 0
+      : selectedLpObj?.viewsCount || 0;
+  const countCheckouts = lpScopedOrders.filter((o) => o.status === "checkout").length;
+  const countPaid = lpScopedOrders.filter((o) => o.status === "paid").length;
+  const countFailedDelivery = lpScopedOrders.filter(
     (o) => o.status === "paid" && o.deliveryStatus === "GAGAL"
   ).length;
+  const scopedRevenue = lpScopedOrders.reduce((sum, o) => sum + o.totalAmount, 0);
 
   return (
     <div className="space-y-6">
@@ -334,7 +362,7 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
       {/* Main Table Card */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6">
         {/* Filter bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-100">
           {/* Tabs */}
           <div className="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
             <button
@@ -345,7 +373,7 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              Semua ({orders.length})
+              Semua ({lpScopedOrders.length})
             </button>
             <button
               onClick={() => setActiveTab("checkout")}
@@ -381,18 +409,66 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
             )}
           </div>
 
-          {/* Search box */}
-          <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Cari nama, WA, email, invoice..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-medium w-full sm:w-64 focus:outline-hidden focus:border-brand-500"
-            />
+          {/* Right filters: LP Filter + Search */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            {/* Filter Asal Iklan / LP */}
+            <div className="relative flex items-center">
+              <Filter className="w-3.5 h-3.5 text-brand-600 absolute left-3 pointer-events-none" />
+              <select
+                value={lpFilter}
+                onChange={(e) => setLpFilter(e.target.value)}
+                className="pl-8 pr-8 py-2 rounded-xl border border-brand-200 bg-brand-50/50 text-xs font-bold text-slate-800 focus:outline-hidden focus:border-brand-500 cursor-pointer"
+                title="Saring transaksi berdasarkan Landing Page / Iklan asal"
+              >
+                <option value="all">Semua Asal Iklan / LP ({orders.length})</option>
+                {landingPages.map((lp) => {
+                  const countForLp = orders.filter((o) => o.landingPage?.slug === lp.slug).length;
+                  return (
+                    <option key={lp.id} value={lp.slug}>
+                      /lp/{lp.slug} — {lp.title} ({countForLp})
+                    </option>
+                  );
+                })}
+                <option value="direct">
+                  Direct Checkout / Tanpa LP ({orders.filter((o) => !o.landingPage).length})
+                </option>
+              </select>
+            </div>
+
+            {/* Search box */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari nama, WA, invoice, LP..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-medium w-full sm:w-56 focus:outline-hidden focus:border-brand-500"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Selected LP Banner Summary */}
+        {lpFilter !== "all" && (
+          <div className="mt-4 bg-sky-50 border border-sky-200 rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs text-sky-900">
+              <span className="font-bold bg-sky-600 text-white px-2 py-0.5 rounded-md font-mono">
+                {lpFilter === "direct" ? "Direct" : `/lp/${lpFilter}`}
+              </span>
+              <span>
+                Menampilkan <strong>{lpScopedOrders.length} transaksi</strong> dengan total omset{" "}
+                <strong className="text-sky-700">{formatRupiah(scopedRevenue)}</strong>
+              </span>
+            </div>
+            <button
+              onClick={() => setLpFilter("all")}
+              className="text-xs font-bold text-sky-700 hover:underline self-start sm:self-auto"
+            >
+              Reset Filter &times;
+            </button>
+          </div>
+        )}
 
         {/* Orders Table */}
         {filteredOrders.length === 0 ? (
@@ -411,6 +487,7 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
               <thead>
                 <tr className="border-b border-slate-100 text-slate-400 text-xs uppercase font-semibold">
                   <th className="pb-3 pl-2">Customer & Invoice</th>
+                  <th className="pb-3">Asal Iklan / LP</th>
                   <th className="pb-3">Produk & Bump</th>
                   <th className="pb-3">Nominal Total</th>
                   <th className="pb-3">Status Bayar</th>
@@ -448,9 +525,36 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
                       </span>
                     </td>
 
+                    {/* Asal Iklan / LP */}
+                    <td className="py-3.5">
+                      {ord.landingPage ? (
+                        <button
+                          type="button"
+                          onClick={() => setLpFilter(ord.landingPage!.slug)}
+                          className="text-left group"
+                          title="Klik untuk saring transaksi dari LP ini"
+                        >
+                          <span className="block text-xs font-bold text-sky-800 group-hover:text-sky-600 max-w-[160px] truncate">
+                            {ord.landingPage.title}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded mt-1">
+                            📍 /lp/{ord.landingPage.slug}
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setLpFilter("direct")}
+                          className="inline-flex items-center gap-1 text-[10px] text-slate-500 bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded-md transition-colors"
+                        >
+                          📍 Direct Checkout
+                        </button>
+                      )}
+                    </td>
+
                     {/* Product & Bump */}
                     <td className="py-3.5">
-                      <p className="font-medium text-slate-800 text-xs">
+                      <p className="font-medium text-slate-800 text-xs max-w-[190px]">
                         {ord.product?.name || "Produk Digital"}
                       </p>
                       {/* Peringatan jika produk belum punya link atau file */}
@@ -463,22 +567,6 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
                         <span className="inline-block mt-1 text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold">
                           + Bump Offer
                         </span>
-                      )}
-                      {ord.landingPage ? (
-                        <div className="mt-1">
-                          <span
-                            className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded"
-                            title={`Asal Iklan / LP: ${ord.landingPage.title}`}
-                          >
-                            📍 /lp/{ord.landingPage.slug}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="mt-1">
-                          <span className="inline-flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">
-                            📍 Langsung (Direct)
-                          </span>
-                        </div>
                       )}
                     </td>
 
