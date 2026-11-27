@@ -293,6 +293,20 @@ export default function LpStudioEditor({
   const [showPixelModal, setShowPixelModal] = useState(false);
   const [savedUrl, setSavedUrl] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedLpUrl, setCopiedLpUrl] = useState(false);
+
+  const currentLiveUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/lp/${slug}`
+      : `/lp/${slug}`;
+
+  const copyCurrentLpUrl = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(`${window.location.origin}/lp/${slug}`);
+      setCopiedLpUrl(true);
+      setTimeout(() => setCopiedLpUrl(false), 2500);
+    }
+  };
 
   // Pixel detection logic: checks if the assigned pixel ID is present in html
   const hasPixel = (() => {
@@ -445,6 +459,26 @@ export default function LpStudioEditor({
                   placeholder="slug-url"
                 />
               </div>
+
+              {/* Tombol Cepat Salin Link LP untuk Meta Ads */}
+              <button
+                type="button"
+                onClick={copyCurrentLpUrl}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs rounded-lg border border-sky-200 transition-all cursor-pointer shadow-2xs shrink-0"
+                title="Salin Link LP lengkap untuk ditempel di Meta Ads Manager"
+              >
+                {copiedLpUrl ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700">Link Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-sky-600" />
+                    <span>Salin Link Meta</span>
+                  </>
+                )}
+              </button>
             </div>
             {lastSavedTime && (
               <p className="text-[10px] text-slate-400 pl-2">
@@ -657,11 +691,38 @@ export default function LpStudioEditor({
         {/* SISI KANAN: PREVIEW LANGSUNG (2/3 LAYAR - JELAS & LEGA) */}
         <div className="w-full lg:w-2/3 flex-1 bg-slate-200/80 flex flex-col items-center overflow-hidden">
           {/* Preview Toolbar */}
-          <div className="w-full px-5 py-2.5 bg-white border-b border-slate-200 flex items-center justify-between text-xs text-slate-600">
+          <div className="w-full px-5 py-2.5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-3">
             <div className="flex items-center gap-2 font-bold text-slate-800">
               <Eye className="w-4 h-4 text-brand-600" />
               <span>PRATINJAU LANGSUNG (2/3 LAYAR)</span>
             </div>
+
+            {/* URL LP Display & 1-Click Copy for Meta */}
+            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Link Iklan Meta:</span>
+              <span className="font-mono text-xs font-bold text-sky-700 max-w-[280px] truncate" title={currentLiveUrl}>
+                {currentLiveUrl}
+              </span>
+              <button
+                type="button"
+                onClick={copyCurrentLpUrl}
+                className="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer shrink-0"
+                title="Salin Link LP untuk ditempel di Meta Ads Manager"
+              >
+                {copiedLpUrl ? (
+                  <>
+                    <Check className="w-3 h-3 text-white" />
+                    <span>Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3 text-white" />
+                    <span>Salin Link</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             <div className="flex items-center gap-3">
               <span className="text-[11px] text-slate-400 hidden sm:inline">
                 {devicePreview === "mobile" ? "📱 Layar HP (Mobile 375px)" : "💻 Layar Penuh (Desktop)"}

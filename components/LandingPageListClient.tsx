@@ -152,9 +152,27 @@ export default function LandingPageListClient({
                         >
                           {p.title}
                         </Link>
-                        <span className="font-mono text-xs text-slate-400">
-                          /lp/{p.slug}
-                        </span>
+                        <div className="mt-1 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => copyPageLink(p.slug, p.id)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 font-mono text-xs font-bold border border-sky-200 transition-all cursor-pointer shadow-2xs"
+                            title="Salin Link LP lengkap untuk ditempel di Meta Ads Manager"
+                          >
+                            {copiedId === p.id ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                <span className="text-emerald-700">Link Tersalin!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5 text-sky-600" />
+                                <span>/lp/{p.slug}</span>
+                                <span className="text-[10px] text-sky-600 font-semibold bg-sky-100 px-1.5 py-0.2 rounded">Salin Meta</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </td>
 
                       <td className="py-4">
