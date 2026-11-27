@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Upload, Link2, Sparkles, Tag, Calendar, DollarSign } from "lucide-react";
+import { X, Upload, Link2, Sparkles, Tag, Calendar, DollarSign, AlertTriangle } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 
 interface Product {
@@ -264,6 +264,16 @@ export default function ProductFormModal({
                   className="mt-3 w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white"
                 />
               </div>
+            </div>
+          )}
+
+          {/* Peringatan Tulisan Merah Jika Link/File Belum Diisi */}
+          {!Boolean(formData.accessLink?.trim() || formData.filePath?.trim()) && (
+            <div className="p-3 bg-red-50 border-2 border-red-300 rounded-xl flex items-center gap-2.5 text-xs text-red-600 font-bold">
+              <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+              <span className="text-red-600 font-bold">
+                ⚠️ Peringatan: Produk file atau link belum terisi! Harap masukkan URL link akses atau file materi digital agar pembeli menerima produk otomatis.
+              </span>
             </div>
           )}
 

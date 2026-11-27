@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Zap,
   MessageSquare,
+  Settings,
 } from "lucide-react";
 
 const navigationItems = [
@@ -56,6 +57,12 @@ const navigationItems = [
     href: "/admin/whatsapp",
     icon: MessageSquare,
     badge: "QR Bot",
+  },
+  {
+    name: "Pengaturan Toko",
+    href: "/admin/settings",
+    icon: Settings,
+    badge: "Email/WA",
   },
 ];
 

@@ -14,10 +14,10 @@ export async function dispatchProductDelivery(orderId: string, isRetry = false) 
       return { success: false, reason: "NOT_FOUND", error: "Pesanan tidak ditemukan" };
     }
 
-    // 1. Validasi Aset Produk (Poin 5: Cegah pembeli bayar tanpa menerima produk)
-    const hasAsset = Boolean(order.product.accessLink || order.product.filePath);
+    // 1. Validasi Aset Produk (Cegah pembeli bayar tanpa menerima produk)
+    const hasAsset = Boolean(order.product.accessLink?.trim() || order.product.filePath?.trim());
     if (!hasAsset) {
-      const errorMsg = `ASET_KOSONG: Produk "${order.product.name}" belum memiliki file upload atau link akses dari penjual. Segera isi link produk di menu Produk Digital.`;
+      const errorMsg = `⚠️ Peringatan: Produk file atau link belum terisi! Produk "${order.product.name}" belum memiliki file upload atau link akses. Segera lengkapi link di menu Produk Digital.`;
       
       await prisma.order.update({
         where: { id: orderId },
@@ -36,7 +36,7 @@ export async function dispatchProductDelivery(orderId: string, isRetry = false) 
       };
     }
 
-    // 2. Ambil Profil Toko & Kontak Penjual (Poin 4: Identitas jelas di pesan)
+    // 2. Ambil Profil Toko & Kontak Penjual (Identitas jelas di pesan)
     const settings = await prisma.settings.findUnique({
       where: { id: "app_settings" },
     });
@@ -64,7 +64,8 @@ export async function dispatchProductDelivery(orderId: string, isRetry = false) 
     const waMessage = `*📦 [${storeName} - Akses Produk Digital]*
 
 Halo Kak *${order.customerName}*,
-Terima kasih, pembayaran untuk pesanan Anda telah kami terima (*LUNAS*)! 🎉
+Terima kasih banyak, pembayaran untuk pesanan Anda telah kami terima (*LUNAS*)! 🎉
+Akses materi digital dan invoice resmi juga telah kami kirimkan ke email Anda: *${order.customerEmail}*.
 
 *Rincian Pesanan:*
 • No. Invoice: *${order.orderNumber}*
@@ -83,15 +84,13 @@ ${cleanContact ? `📱 WhatsApp CS: https://wa.me/${cleanContact}` : ""}
 
 Selamat belajar dan semoga ilmunya bermanfaat!`;
 
-    // 3. Eksekusi Pengiriman WhatsApp
-    const waResult = await sendWhatsAppDirectMessage(order.customerWhatsapp, waMessage);
-
-    // 4. Eksekusi Pengiriman Email Sebagai Cadangan WA (Poin 3: Dual-Channel Delivery)
+    // 3. Eksekusi Pengiriman Email Default (Semua produk dikirim via email adalah default)
     const emailResult = await sendDigitalProductEmail({
       toEmail: order.customerEmail,
       customerName: order.customerName,
       orderNumber: order.orderNumber,
       productName: order.product.name,
+      totalAmount: order.totalAmount,
       deliveryType: order.product.deliveryType,
       accessLink: order.product.accessLink,
       filePath: order.product.filePath,
@@ -99,28 +98,33 @@ Selamat belajar dan semoga ilmunya bermanfaat!`;
       bumpTitle,
     });
 
-    // 5. Evaluasi Status Pengiriman (Poin 1 & 2: Penanda status terkirim, gagal, dan rincian kegagalan)
+    // 4. Eksekusi Pengiriman WhatsApp (Saluran komplementer)
+    const waResult = await sendWhatsAppDirectMessage(order.customerWhatsapp, waMessage);
+
+    // 5. Evaluasi Status Pengiriman (Email adalah Default)
     let newDeliveryStatus = "GAGAL";
-    let channel = "none";
+    let channel = "email";
     let deliveryError: string | null = null;
 
-    if (waResult.success && emailResult.success) {
+    if (emailResult.success && waResult.success) {
       newDeliveryStatus = "TERKIRIM";
       channel = "dual";
-    } else if (waResult.success && !emailResult.success) {
-      newDeliveryStatus = "TERKIRIM";
-      channel = "whatsapp";
-      deliveryError = `WA Terkirim | Email gagal: ${emailResult.reason || "SMTP belum aktif"}`;
-    } else if (!waResult.success && emailResult.success) {
+      deliveryError = null;
+    } else if (emailResult.success && !waResult.success) {
+      // Email sukses (Default delivery terpenuhi), WA sender offline/gagal
       newDeliveryStatus = "TERKIRIM";
       channel = "email";
-      deliveryError = `WA Gagal (${waResult.error || "WA Sender Offline"}), Link berhasil terkirim via Email Cadangan`;
+      deliveryError = `Terkirim via Email (Default). Notifikasi WA gagal: ${waResult.error || "WA Sender Offline"}`;
+    } else if (!emailResult.success && waResult.success) {
+      // Email gagal, tapi WA sukses terkirim
+      newDeliveryStatus = "TERKIRIM";
+      channel = "whatsapp";
+      deliveryError = `Terkirim via WhatsApp. Email gagal: ${emailResult.reason || "SMTP error"}`;
     } else {
+      // Dua-duanya gagal
       newDeliveryStatus = "GAGAL";
       channel = "none";
-      deliveryError = `WA Gagal: ${waResult.error || "WhatsApp master sender tidak terhubung"}${
-        emailResult.reason ? ` | Email: ${emailResult.reason}` : ""
-      }`;
+      deliveryError = `Email Gagal: ${emailResult.reason || "SMTP belum siap"} | WA Gagal: ${waResult.error || "WA Sender Offline"}`;
     }
 
     const updatedOrder = await prisma.order.update({

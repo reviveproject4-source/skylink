@@ -171,11 +171,13 @@ export default function ProductListClient({
                     {p.description || "Tidak ada deskripsi tambahan"}
                   </p>
 
-                  {/* Peringatan Aset Kosong (Poin 5) */}
+                  {/* Peringatan Aset Kosong */}
                   {!Boolean(p.accessLink?.trim() || p.filePath?.trim()) && (
-                    <div className="mt-2.5 p-2 bg-red-50 border border-red-200 rounded-xl flex items-center gap-1.5 text-[11px] text-red-700 font-bold">
-                      <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                      <span>⚠️ Link/File Belum Diisi! Pembeli tidak akan menerima materi jika membayar.</span>
+                    <div className="mt-2.5 p-2.5 bg-red-50 border-2 border-red-400 rounded-xl flex items-center gap-2 text-xs text-red-600 font-bold">
+                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                      <span className="text-red-600 font-bold">
+                        ⚠️ Peringatan: Produk file atau link belum terisi!
+                      </span>
                     </div>
                   )}
 

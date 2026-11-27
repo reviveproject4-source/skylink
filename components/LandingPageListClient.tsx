@@ -164,8 +164,8 @@ export default function LandingPageListClient({
                               {p.product.name}
                             </span>
                             {!Boolean(p.product.accessLink || p.product.filePath) && (
-                              <span className="inline-block mt-0.5 text-[10px] text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded font-bold">
-                                ⚠️ Aset Belum Diisi
+                              <span className="inline-block mt-0.5 text-[10px] text-red-600 bg-red-50 border border-red-300 px-1.5 py-0.5 rounded font-bold">
+                                ⚠️ Produk file atau link belum terisi
                               </span>
                             )}
                           </div>

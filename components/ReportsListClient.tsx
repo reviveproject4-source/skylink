@@ -158,7 +158,44 @@ export default function ReportsListClient({
           : ""
       }Ada yang bisa kami bantu?`
     );
-    window.open(`https://wa.me/${clean}?text=${message}`, "_blank");
+    window.open(`https://api.whatsapp.com/send?phone=${clean}&text=${message}`, "_blank");
+  };
+
+  // Follow-Up & Pengingat Pembayaran: Begitu klik no WA, layar langsung ke chat tujuan & pesan siap kirim
+  const openWaFollowUp = (ord: Order) => {
+    let clean = ord.customerWhatsapp.replace(/\D/g, "");
+    if (clean.startsWith("0")) clean = "62" + clean.substring(1);
+
+    const isPaid = ord.status === "paid";
+    let messageText = "";
+
+    if (!isPaid) {
+      // Template Pengingat Pembayaran (Follow-up)
+      messageText = `Halo Kak ${ord.customerName} 👋
+Terima kasih telah memesan produk digital di toko kami!
+
+Berikut ringkasan pesanan Anda:
+📦 *Produk:* ${ord.product?.name || "Produk Digital"}
+🧾 *No. Invoice:* ${ord.orderNumber}
+💰 *Total Tagihan:* ${formatRupiah(ord.totalAmount)}
+
+Apakah ada kendala saat melakukan transfer pembayaran Kak?
+Begitu pembayaran selesai, akses materi produk digital dan bukti transaksi resmi akan langsung otomatis terkirim ke email Anda (*${ord.customerEmail}*).
+
+Silakan balas pesan ini jika membutuhkan info rekening pembayaran atau bantuan ya Kak. Terima kasih! 🙏`;
+    } else {
+      // Template Konfirmasi Pengiriman Lunas
+      const linkText = ord.product?.accessLink ? `\n\nLink Akses Materi Digital:\n👉 ${ord.product.accessLink}` : "";
+      messageText = `Halo Kak ${ord.customerName} 👋
+Pembayaran untuk pesanan ${ord.orderNumber} (*${ord.product?.name || "Produk Digital"}*) telah kami terima (*LUNAS*).
+Materi digital dan invoice resmi juga sudah terkirim otomatis ke email Anda (*${ord.customerEmail}*).${linkText}
+
+Ada yang bisa kami bantu seputar materi digital Anda?`;
+    }
+
+    const encoded = encodeURIComponent(messageText);
+    const targetUrl = `https://api.whatsapp.com/send?phone=${clean}&text=${encoded}`;
+    window.open(targetUrl, "_blank");
   };
 
   // Filtered orders
@@ -385,12 +422,19 @@ export default function ReportsListClient({
                       <div className="font-bold text-slate-900 text-sm">
                         {ord.customerName}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                        <span className="font-mono text-slate-600">
-                          {ord.customerWhatsapp}
-                        </span>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => openWaFollowUp(ord)}
+                          className="inline-flex items-center gap-1.5 font-mono text-emerald-700 font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-lg transition-all hover:scale-105 shadow-2xs cursor-pointer"
+                          title="Klik No WA: Layar langsung ke halaman WA tujuan & pesan follow-up disiapkan"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>{ord.customerWhatsapp}</span>
+                          <span className="text-[10px] text-emerald-600 font-medium">(Kirim WA)</span>
+                        </button>
                         <span>•</span>
-                        <span className="text-slate-400 truncate max-w-[150px]">
+                        <span className="text-slate-400 truncate max-w-[150px]" title={ord.customerEmail}>
                           {ord.customerEmail}
                         </span>
                       </div>
@@ -404,10 +448,10 @@ export default function ReportsListClient({
                       <p className="font-medium text-slate-800 text-xs">
                         {ord.product?.name || "Produk Digital"}
                       </p>
-                      {/* Peringatan jika produk belum punya link */}
+                      {/* Peringatan jika produk belum punya link atau file */}
                       {!Boolean(ord.product?.accessLink || ord.product?.filePath) && (
-                        <span className="inline-block mt-0.5 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">
-                          ⚠️ Aset Belum Diisi
+                        <span className="inline-block mt-0.5 text-[10px] bg-red-50 text-red-600 border border-red-300 px-2 py-0.5 rounded-md font-bold">
+                          ⚠️ Produk file atau link belum terisi
                         </span>
                       )}
                       {ord.bumpIncluded && (
@@ -507,21 +551,33 @@ export default function ReportsListClient({
                           </button>
                         )}
 
-                        {/* WhatsApp Bot Direct Reminder (Jika status belum bayar) */}
+                        {/* WhatsApp Follow-up Pengingat Pembayaran (Layar langsung ke WA & pesan siap kirim) */}
+                        {ord.status !== "paid" && (
+                          <button
+                            onClick={() => openWaFollowUp(ord)}
+                            className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
+                            title="Layar langsung ke halaman nomor WA tujuan & siapkan pesan pengingat pembayaran"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>Follow Up WA</span>
+                          </button>
+                        )}
+
+                        {/* WhatsApp Bot Direct Reminder (Jika gateway aktif) */}
                         {ord.status !== "paid" && (
                           <button
                             onClick={() => sendWaBotReminder(ord)}
                             disabled={waSendingId === ord.id}
-                            className="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold transition-colors inline-flex items-center gap-1 border border-sky-200"
-                            title="Kirim pesan pengingat otomatis via WhatsApp Bot"
+                            className="px-2 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-semibold transition-colors inline-flex items-center gap-1 border border-sky-200"
+                            title="Kirim pesan pengingat otomatis via WhatsApp Bot Gateway"
                           >
-                            <MessageCircle className="w-3.5 h-3.5 text-sky-600" />
+                            <Send className="w-3 h-3 text-sky-600" />
                             <span>
                               {waSendingId === ord.id
                                 ? "Mengirim..."
                                 : waSuccessId === ord.id
                                 ? "Terkirim! ✓"
-                                : "Auto Reminder WA"}
+                                : "Auto Bot"}
                             </span>
                           </button>
                         )}

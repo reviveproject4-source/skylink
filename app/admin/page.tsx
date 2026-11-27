@@ -283,7 +283,23 @@ export default async function AdminDashboardPage() {
                       </td>
                       <td className="py-3">
                         <p className="font-semibold text-slate-800">{ord.customerName}</p>
-                        <p className="text-xs text-slate-400">{ord.customerWhatsapp}</p>
+                        <a
+                          href={`https://api.whatsapp.com/send?phone=${(() => {
+                            let c = ord.customerWhatsapp.replace(/\D/g, "");
+                            return c.startsWith("0") ? "62" + c.substring(1) : c;
+                          })()}&text=${encodeURIComponent(
+                            ord.status === "paid"
+                              ? `Halo Kak ${ord.customerName}, terima kasih atas pembayaran pesanan ${ord.orderNumber}. Materi digital telah dikirimkan ke email Anda.`
+                              : `Halo Kak ${ord.customerName}, kami mengonfirmasi pesanan ${ord.orderNumber} (${ord.product?.name || "Produk Digital"}). Apakah ada kendala transfer pembayaran Kak? Begitu lunas, akses materi produk digital akan langsung terkirim otomatis ke email Anda.`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-mono text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-1 mt-0.5"
+                          title="Klik No WA: Langsung ke halaman WA tujuan & siapkan pesan"
+                        >
+                          <span>{ord.customerWhatsapp}</span>
+                          <span className="text-[10px]">↗</span>
+                        </a>
                       </td>
                       <td className="py-3 font-medium text-slate-600">
                         {ord.product?.name || "Produk Digital"}
