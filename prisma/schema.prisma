@@ -85,6 +85,11 @@ model Order {
   bankAccountId    String?
   bankAccount      BankAccount? @relation(fields: [bankAccountId], references: [id])
   landingPageId    String?
+  deliveryStatus   String       @default("BELUM") // "BELUM", "TERKIRIM", "GAGAL"
+  deliveryChannel  String?      // "whatsapp", "email", "dual"
+  deliveryError    String?      // catatan error jika gagal
+  deliveryRetryCount Int        @default(0)
+  lastDeliveryAttempt DateTime?
   deliveredAt      DateTime?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
@@ -104,12 +109,15 @@ model FunnelLog {
 }
 
 model Settings {
-  id         String   @id @default("app_settings")
-  appName    String   @default("SkyLink")
-  smtpHost   String?
-  smtpPort   Int?
-  smtpUser   String?
-  smtpPass   String?
-  smtpSender String?
-  updatedAt  DateTime @updatedAt
+  id                 String   @id @default("app_settings")
+  appName            String   @default("SkyLink")
+  storeName          String   @default("Revive Project")
+  sellerContactPhone String?  @default("081234567890")
+  sellerContactEmail String?  @default("support@reviveproject.id")
+  smtpHost           String?
+  smtpPort           Int?
+  smtpUser           String?
+  smtpPass           String?
+  smtpSender         String?
+  updatedAt          DateTime @updatedAt
 }

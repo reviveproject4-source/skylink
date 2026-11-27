@@ -13,6 +13,7 @@ import {
   Link2,
   FileText,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import ProductFormModal from "./ProductFormModal";
@@ -169,6 +170,14 @@ export default function ProductListClient({
                   <p className="text-xs text-slate-400 mt-1 line-clamp-2">
                     {p.description || "Tidak ada deskripsi tambahan"}
                   </p>
+
+                  {/* Peringatan Aset Kosong (Poin 5) */}
+                  {!Boolean(p.accessLink?.trim() || p.filePath?.trim()) && (
+                    <div className="mt-2.5 p-2 bg-red-50 border border-red-200 rounded-xl flex items-center gap-1.5 text-[11px] text-red-700 font-bold">
+                      <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                      <span>⚠️ Link/File Belum Diisi! Pembeli tidak akan menerima materi jika membayar.</span>
+                    </div>
+                  )}
 
                   {/* Pricing info */}
                   <div className="mt-4 p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-baseline justify-between">

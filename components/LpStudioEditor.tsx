@@ -23,6 +23,8 @@ interface Product {
   id: string;
   name: string;
   pricePromo: number;
+  accessLink?: string | null;
+  filePath?: string | null;
 }
 
 interface MetaPixelItem {
@@ -77,6 +79,12 @@ export default function LpStudioEditor({
     metaPixelId === "custom"
       ? customPixelId.trim()
       : activePixel?.pixelId || "";
+
+  // Validasi Aset Produk (Poin 5: Cek apakah produk memiliki link atau file)
+  const selectedProduct = products.find((p) => p.id === productId);
+  const isProductMissingAsset =
+    selectedProduct &&
+    !Boolean(selectedProduct.accessLink?.trim() || selectedProduct.filePath?.trim());
 
   const [htmlContent, setHtmlContent] = useState(
     initialLp?.htmlContent ||
@@ -422,6 +430,25 @@ export default function LpStudioEditor({
         </div>
       </div>
 
+      {/* RED BANNER: PERINGATAN PRODUK TANPA ASET (Poin 5) */}
+      {isProductMissingAsset && (
+        <div className="bg-red-600 text-white px-6 py-2.5 text-xs flex items-center justify-between font-bold animate-in fade-in duration-200 z-10 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-white shrink-0" />
+            <span>
+              ⚠️ PERINGATAN ASET KOSONG: Produk &quot;{selectedProduct?.name}&quot; belum memiliki link akses atau file materi digital! Pembeli yang membayar tidak akan menerima materi.
+            </span>
+          </div>
+          <Link
+            href="/admin/products"
+            target="_blank"
+            className="bg-white text-red-700 px-3 py-1 rounded-lg text-xs font-black hover:bg-red-50 transition-colors shadow-2xs shrink-0"
+          >
+            Lengkapi Link Produk &rarr;
+          </Link>
+        </div>
+      )}
+
       {/* SPLIT SCREEN WORKSPACE */}
       <div className="flex-1 flex overflow-hidden">
         {/* SISI KIRI: KODE HTML */}
@@ -561,6 +588,14 @@ export default function LpStudioEditor({
                 </span>
               )}
             </div>
+
+            {/* Peringatan Aset Kosong di Konfirmasi Modal */}
+            {isProductMissingAsset && (
+              <div className="mt-3 text-[11px] text-left p-3 rounded-xl bg-red-50 border border-red-200 text-red-800">
+                <strong className="block text-red-700">⚠️ Peringatan Aset Belum Lengkap:</strong>
+                Produk ini belum memiliki file upload atau link materi digital. Segera lengkapi di menu Produk agar pembeli tidak menerima produk kosong setelah membayar.
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="mt-6 flex items-center justify-center gap-3">

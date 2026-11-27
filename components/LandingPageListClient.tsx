@@ -34,6 +34,8 @@ interface LandingPage {
   product?: {
     id: string;
     name: string;
+    accessLink?: string | null;
+    filePath?: string | null;
   } | null;
 }
 
@@ -157,9 +159,16 @@ export default function LandingPageListClient({
 
                       <td className="py-4">
                         {p.product ? (
-                          <span className="font-medium text-slate-800 text-xs">
-                            {p.product.name}
-                          </span>
+                          <div>
+                            <span className="font-medium text-slate-800 text-xs block">
+                              {p.product.name}
+                            </span>
+                            {!Boolean(p.product.accessLink || p.product.filePath) && (
+                              <span className="inline-block mt-0.5 text-[10px] text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded font-bold">
+                                ⚠️ Aset Belum Diisi
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <span className="text-xs text-slate-400 italic">
                             Belum terhubung

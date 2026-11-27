@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NewLandingPageStudio() {
   const products = await prisma.product.findMany({
-    select: { id: true, name: true, pricePromo: true },
+    select: { id: true, name: true, pricePromo: true, accessLink: true, filePath: true },
     orderBy: { createdAt: "desc" },
   });
 

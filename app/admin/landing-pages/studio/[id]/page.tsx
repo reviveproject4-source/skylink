@@ -18,7 +18,7 @@ export default async function EditLandingPageStudio({
   }
 
   const products = await prisma.product.findMany({
-    select: { id: true, name: true, pricePromo: true },
+    select: { id: true, name: true, pricePromo: true, accessLink: true, filePath: true },
     orderBy: { createdAt: "desc" },
   });
 

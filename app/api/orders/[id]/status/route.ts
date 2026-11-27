@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendDigitalProductEmail } from "@/lib/mailer";
+import { dispatchProductDelivery } from "@/lib/delivery";
 
 export async function PUT(
   req: Request,
@@ -20,18 +20,16 @@ export async function PUT(
     }
 
     // Update order status
-    const updatedOrder = await prisma.order.update({
+    await prisma.order.update({
       where: { id: params.id },
       data: {
         status,
-        deliveredAt: status === "paid" ? new Date() : undefined,
       },
-      include: { product: true },
     });
 
     // If marked as PAID:
     // 1. Log to Funnel as "paid" (3. Sudah bayar)
-    // 2. Send digital product email automatically!
+    // 2. Dispatch Dual Delivery (WhatsApp + Email Backup) dengan pelacakan status kegagalan
     if (status === "paid") {
       await prisma.funnelLog.create({
         data: {
@@ -42,29 +40,26 @@ export async function PUT(
         },
       });
 
-      // Send email
-      let bumpTitle: string | null = null;
-      if (order.bumpIncluded && order.bumpProductId) {
-        const bumpProduct = await prisma.product.findUnique({
-          where: { id: order.bumpProductId },
-        });
-        bumpTitle = bumpProduct?.name || null;
-      }
+      // Jalankan dual delivery WhatsApp + Email
+      const deliveryResult = await dispatchProductDelivery(order.id, false);
 
-      await sendDigitalProductEmail({
-        toEmail: order.customerEmail,
-        customerName: order.customerName,
-        orderNumber: order.orderNumber,
-        productName: order.product.name,
-        deliveryType: order.product.deliveryType,
-        accessLink: order.product.accessLink,
-        filePath: order.product.filePath,
-        bumpIncluded: order.bumpIncluded,
-        bumpTitle,
+      const refreshedOrder = await prisma.order.findUnique({
+        where: { id: params.id },
+        include: { product: true, bankAccount: true },
+      });
+
+      return NextResponse.json({
+        ...refreshedOrder,
+        deliveryResult,
       });
     }
 
-    return NextResponse.json(updatedOrder);
+    const refreshed = await prisma.order.findUnique({
+      where: { id: params.id },
+      include: { product: true, bankAccount: true },
+    });
+
+    return NextResponse.json(refreshed);
   } catch (error: any) {
     console.error("Update order status error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

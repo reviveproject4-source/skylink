@@ -11,6 +11,7 @@ import {
   Package,
   Layers,
   ArrowUpRight,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -28,6 +29,7 @@ export default async function AdminDashboardPage() {
   let funnelCheckouts = 0;
   let funnelPaid = 0;
   let activeLp = null;
+  let failedDeliveryCount = 0;
 
   try {
     orders = await prisma.order.findMany({
@@ -48,6 +50,13 @@ export default async function AdminDashboardPage() {
     });
     funnelPaid = await prisma.funnelLog.count({
       where: { step: "paid" },
+    });
+
+    failedDeliveryCount = await prisma.order.count({
+      where: {
+        status: "paid",
+        deliveryStatus: "GAGAL",
+      },
     });
 
     activeLp = await prisma.landingPage.findFirst({
@@ -100,6 +109,32 @@ export default async function AdminDashboardPage() {
       />
 
       <main className="p-8 max-w-7xl mx-auto w-full space-y-8">
+        {/* Urgent Delivery Failure Alert Banner */}
+        {failedDeliveryCount > 0 && (
+          <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pulse">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-rose-600/30">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-rose-900">
+                  Peringatan Mendesak: {failedDeliveryCount} Pesanan Gagal Terkirim ke Pembeli!
+                </h3>
+                <p className="text-xs text-rose-700 mt-0.5">
+                  Pembeli telah melunasi pembayaran tetapi WhatsApp Sender mati/offline atau file/link belum terisi. Akses produk belum sampai ke tangan pembeli.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/admin/reports"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-sm shrink-0"
+            >
+              Buka Pesanan & Kirim Ulang
+              <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
+
         {/* Top Summary Banner */}
         <div className="bg-gradient-to-r from-brand-600 via-brand-500 to-sky-400 rounded-3xl p-8 text-white shadow-xl shadow-brand-500/15 relative overflow-hidden">
           <div className="relative z-10">
@@ -262,16 +297,33 @@ export default async function AdminDashboardPage() {
                         {formatRupiah(ord.totalAmount)}
                       </td>
                       <td className="py-3">
-                        <span
-                          className={`text-xs px-2.5 py-1 rounded-full font-semibold inline-flex items-center gap-1 ${
-                            ord.status === "paid"
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-brand-50 text-brand-700 border border-brand-200"
-                          }`}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          {ord.status === "paid" ? "Lunas" : "Checkout (Pesanan Masuk)"}
-                        </span>
+                        <div className="flex flex-col gap-1 items-start">
+                          <span
+                            className={`text-xs px-2.5 py-1 rounded-full font-semibold inline-flex items-center gap-1 ${
+                              ord.status === "paid"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-brand-50 text-brand-700 border border-brand-200"
+                            }`}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            {ord.status === "paid" ? "Lunas" : "Checkout (Pesanan Masuk)"}
+                          </span>
+                          {ord.status === "paid" && (
+                            ord.deliveryStatus === "GAGAL" ? (
+                              <span className="text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                                ⚠️ Gagal Kirim
+                              </span>
+                            ) : ord.deliveryStatus === "TERKIRIM" ? (
+                              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                                ✓ Terkirim
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                                Belum Terkirim
+                              </span>
+                            )
+                          )}
+                        </div>
                       </td>
                       <td className="py-3 text-right pr-2 text-xs text-slate-400">
                         {formatDate(ord.createdAt)}
