@@ -81,8 +81,8 @@ export default function Sidebar({ appName = "SkyLink" }: { appName?: string }) {
           : "-translate-x-full lg:translate-x-0 shadow-none"
       } ${
         isCollapsed
-          ? "lg:w-0 lg:-ml-64 lg:overflow-hidden lg:border-r-0 lg:p-0"
-          : "lg:w-64 lg:ml-0"
+          ? "lg:hidden"
+          : "lg:flex lg:w-64"
       }`}
     >
       {/* Brand Header */}
