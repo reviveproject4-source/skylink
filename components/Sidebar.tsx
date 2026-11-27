@@ -13,7 +13,10 @@ import {
   Zap,
   MessageSquare,
   Settings,
+  PanelLeftClose,
+  X,
 } from "lucide-react";
+import { useSidebar } from "./SidebarContext";
 
 const navigationItems = [
   {
@@ -68,13 +71,30 @@ const navigationItems = [
 
 export default function Sidebar({ appName = "SkyLink" }: { appName?: string }) {
   const pathname = usePathname();
+  const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebar();
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 min-h-screen">
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 min-h-screen transition-all duration-300 ease-in-out lg:static lg:z-auto ${
+        isMobileOpen
+          ? "translate-x-0 shadow-2xl"
+          : "-translate-x-full lg:translate-x-0 shadow-none"
+      } ${
+        isCollapsed
+          ? "lg:w-0 lg:-ml-64 lg:overflow-hidden lg:border-r-0 lg:p-0"
+          : "lg:w-64 lg:ml-0"
+      }`}
+    >
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-        <Link href="/admin" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+      <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100 shrink-0">
+        <Link
+          href="/admin"
+          onClick={() => {
+            if (isMobileOpen) closeMobile();
+          }}
+          className="flex items-center gap-2.5"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 shrink-0">
             <Zap className="w-5 h-5 fill-current" />
           </div>
           <div>
@@ -86,6 +106,28 @@ export default function Sidebar({ appName = "SkyLink" }: { appName?: string }) {
             </span>
           </div>
         </Link>
+
+        {/* Buttons: Close on mobile / Collapse on desktop */}
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={closeMobile}
+            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            title="Tutup Menu"
+            aria-label="Tutup Menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={toggleCollapse}
+            className="hidden lg:inline-flex p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            title="Sembunyikan Sidebar (Perluas Tampilan)"
+            aria-label="Sembunyikan Sidebar"
+          >
+            <PanelLeftClose className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Navigation List */}
@@ -104,6 +146,9 @@ export default function Sidebar({ appName = "SkyLink" }: { appName?: string }) {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => {
+                if (isMobileOpen) closeMobile();
+              }}
               className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group ${
                 isActive
                   ? "bg-brand-50 text-brand-700 font-semibold shadow-sm shadow-brand-100"

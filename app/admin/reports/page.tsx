@@ -58,7 +58,7 @@ export default async function ReportsAdminPage({
   return (
     <div className="flex-1 flex flex-col min-h-screen">
       <Header title="Laporan Funnel & Pembeli" totalRevenue={totalRevenue} />
-      <main className="p-8 max-w-7xl mx-auto w-full">
+      <main className="p-4 sm:p-8 max-w-7xl mx-auto w-full">
         <ReportsListClient
           orders={serializedOrders}
           funnelViews={serializedViews}
