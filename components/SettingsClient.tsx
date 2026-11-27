@@ -109,9 +109,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
               <h3 className="text-sm font-bold text-slate-900">
                 Identitas Toko / Brand
               </h3>
-              <p className="text-xs text-slate-400">
-                Nama brand ini akan otomatis dicantumkan di email invoice dan pesan WhatsApp
-              </p>
             </div>
           </div>
 
@@ -128,9 +125,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
                 placeholder="Contoh: Revive Project"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-hidden focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Tampil di subjek email & template pesan customer
-              </p>
             </div>
 
             <div>
@@ -144,9 +138,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
                 placeholder="SkyLink"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-hidden focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Nama software sistem admin
-              </p>
             </div>
           </div>
         </div>
@@ -161,9 +152,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
               <h3 className="text-sm font-bold text-slate-900">
                 Email Default & Nomor WhatsApp Default
               </h3>
-              <p className="text-xs text-slate-400">
-                Kontak resmi penjual untuk pengiriman produk otomatis dan saluran follow-up
-              </p>
             </div>
           </div>
 
@@ -187,9 +175,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
                 placeholder="support@reviveproject.id"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-hidden focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Email ini menjadi alamat resmi pengiriman link materi digital & ucapan terima kasih
-              </p>
             </div>
 
             <div>
@@ -205,9 +190,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
                 placeholder="Contoh: 081234567890"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-hidden focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Nomor CS yang tertera pada pesan invoice dan tujuan saat customer klik bantuan
-              </p>
             </div>
           </div>
         </div>
@@ -222,9 +204,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
               <h3 className="text-sm font-bold text-slate-900">
                 Konfigurasi Server SMTP (Pengiriman Email Default)
               </h3>
-              <p className="text-xs text-slate-400">
-                Pengaturan server SMTP agar SkyLink dapat mengirim email langsung ke inbox pembeli
-              </p>
             </div>
           </div>
 

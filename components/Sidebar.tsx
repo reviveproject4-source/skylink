@@ -182,8 +182,8 @@ export default function Sidebar({ appName = "SkyLink" }: { appName?: string }) {
       </div>
 
       {/* Quick Status / Footer */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/50 m-3 rounded-2xl">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+      <div className="p-3 border-t border-slate-100 bg-slate-50/50 m-3 rounded-2xl">
+        <div className="flex items-center justify-between text-xs text-slate-500">
           <span className="flex items-center gap-1.5 font-medium text-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             Mode Pribadi
@@ -192,9 +192,6 @@ export default function Sidebar({ appName = "SkyLink" }: { appName?: string }) {
             Self-Hosted
           </span>
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed">
-          Semua data order & CAPI diproses langsung dari server lokal Anda.
-        </p>
       </div>
     </aside>
   );

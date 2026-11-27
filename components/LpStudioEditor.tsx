@@ -766,9 +766,6 @@ export default function LpStudioEditor({
             <h3 className="text-xl font-black text-slate-800">
               Landing Page Berhasil Disimpan & Live!
             </h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
-              Konfirmasi link resmi halaman Anda yang siap digunakan untuk beriklan atau dibagikan:
-            </p>
 
             {/* Official Live Link Box */}
             <div className="mt-5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-2 text-left">

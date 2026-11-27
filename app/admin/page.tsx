@@ -184,9 +184,6 @@ export default async function AdminDashboardPage() {
                 dari {totalSuccessfulOrders} transaksi pemesanan
               </span>
             </div>
-            <p className="mt-2 text-sm text-brand-50/90 max-w-xl">
-              Nominal total pendapatan yang tercatat dari seluruh funnel penjualan produk digital Anda selama 30 hari terakhir.
-            </p>
           </div>
           {/* Subtle background glow effect */}
           <div className="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
@@ -200,9 +197,6 @@ export default async function AdminDashboardPage() {
                 <TrendingUp className="w-5 h-5 text-brand-600" />
                 Grafik Penjualan Harian (Tren Omset 30 Hari)
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Fluktuasi omset penjualan dan jumlah pesanan per hari
-              </p>
             </div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/60">
               <span className="w-2.5 h-2.5 rounded-full bg-brand-500" />
@@ -221,9 +215,6 @@ export default async function AdminDashboardPage() {
                 <BarChart3 className="w-5 h-5 text-brand-600" />
                 Laporan Penjualan & Funnel
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Rincian funnel konversi, performa iklan per landing page, dan aktivitas transaksi terbaru
-              </p>
             </div>
             <Link
               href="/admin/reports"
@@ -244,9 +235,6 @@ export default async function AdminDashboardPage() {
                 <h3 className="text-2xl font-bold text-slate-800 mt-1">
                   {funnelViews}
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Pengunjung membuka LP
-                </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center border border-slate-100">
                 <Eye className="w-6 h-6" />
@@ -261,9 +249,6 @@ export default async function AdminDashboardPage() {
                 <h3 className="text-2xl font-bold text-slate-800 mt-1">
                   {funnelCheckouts}
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Pengunjung isi form checkout
-                </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center border border-brand-100">
                 <ShoppingCart className="w-6 h-6" />
@@ -278,9 +263,6 @@ export default async function AdminDashboardPage() {
                 <h3 className="text-2xl font-bold text-slate-800 mt-1">
                   {funnelPaid}
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Transaksi sukses & produk terkirim
-                </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
                 <CheckCircle2 className="w-6 h-6" />
@@ -301,9 +283,6 @@ export default async function AdminDashboardPage() {
                     {lpStatsList.length} LP Aktif
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Setiap iklan yang menuju link LP berbeda otomatis dipisahkan datanya di sini agar mudah membandingkan performa iklan.
-                </p>
               </div>
               <Link
                 href="/admin/landing-pages"
@@ -452,9 +431,6 @@ export default async function AdminDashboardPage() {
               <h3 className="text-lg font-bold text-slate-900">
                 Aktivitas Transaksi Terbaru
               </h3>
-              <p className="text-xs text-slate-400">
-                Daftar pembeli terakhir yang masuk ke sistem
-              </p>
             </div>
             <Link
               href="/admin/reports"
@@ -470,9 +446,6 @@ export default async function AdminDashboardPage() {
               <ShoppingCart className="w-10 h-10 text-slate-300 mx-auto mb-3" />
               <p className="text-sm font-semibold text-slate-600">
                 Belum ada transaksi dalam 30 hari terakhir
-              </p>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
-                Begitu pembeli memesan lewat landing page atau link checkout Anda, data akan langsung muncul di sini.
               </p>
             </div>
           ) : (

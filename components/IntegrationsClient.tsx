@@ -122,9 +122,6 @@ export default function IntegrationsClient({
           <h2 className="text-xl font-bold text-slate-900">
             Daftar Meta Pixel & CAPI (Facebook Ads)
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Tambahkan dan kelola beberapa Meta Pixel berbeda. Setiap Landing Page dapat menggunakan Pixel yang berbeda sesuai akun iklan Anda.
-          </p>
         </div>
 
         <button
@@ -142,12 +139,9 @@ export default function IntegrationsClient({
           <div className="w-12 h-12 rounded-2xl bg-[#1877f2]/10 text-[#1877f2] flex items-center justify-center mx-auto mb-3 font-bold text-xl">
             f
           </div>
-          <h3 className="text-base font-bold text-slate-700">
+          <h3 className="text-base font-bold text-slate-700 mb-5">
             Belum ada Meta Pixel yang ditambahkan
           </h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 mb-5">
-            Tambahkan ID Pixel Facebook/Meta pertama Anda agar bisa langsung dipilih dan dipasang pada setiap Landing Page.
-          </p>
           <button
             onClick={() => openModal()}
             className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20 inline-flex items-center gap-2"

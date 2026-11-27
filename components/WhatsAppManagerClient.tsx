@@ -119,9 +119,6 @@ export default function WhatsAppManagerClient() {
         <h2 className="text-xl font-bold text-slate-900">
           WhatsApp Gateway (Self-Hosted Bot)
         </h2>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Hubungkan nomor WhatsApp Anda secara langsung tanpa biaya langganan untuk mengirim reminder invoice, follow-up, dan pengiriman link produk digital
-        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -163,9 +160,6 @@ export default function WhatsAppManagerClient() {
                 </h4>
                 <p className="font-mono text-sm font-bold text-brand-700 mt-0.5">
                   +{waData.userInfo?.phone}
-                </p>
-                <p className="text-xs text-slate-400 mt-1">
-                  Sistem siap mengirimkan notifikasi dan reminder otomatis ke pembeli Anda.
                 </p>
               </div>
 
@@ -323,9 +317,6 @@ export default function WhatsAppManagerClient() {
               <Sparkles className="w-4 h-4 text-brand-600" />
               Format Template Pesan Reminder & Follow-Up
             </h3>
-            <p className="text-xs text-slate-400">
-              Template ini otomatis dipanggil oleh sistem saat Anda menekan tombol follow-up di menu Laporan:
-            </p>
 
             {/* Template 1 */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">

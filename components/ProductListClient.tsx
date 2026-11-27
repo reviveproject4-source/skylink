@@ -91,9 +91,6 @@ export default function ProductListClient({
           <h2 className="text-xl font-bold text-slate-900">
             Katalog Produk Digital
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Kelola produk digital, diskon, tanggal batas waktu, dan penawaran bump offer
-          </p>
         </div>
 
         <button
@@ -112,12 +109,9 @@ export default function ProductListClient({
       {products.length === 0 ? (
         <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center shadow-xs">
           <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-700">
+          <h3 className="text-base font-bold text-slate-700 mb-5">
             Belum ada produk digital
           </h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 mb-5">
-            Tambahkan produk digital pertama Anda (ebook, template, lisensi, atau kursus video) untuk mulai menerima pesanan.
-          </p>
           <button
             onClick={() => {
               setEditingProduct(null);

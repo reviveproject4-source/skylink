@@ -300,7 +300,6 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
             <Eye className="w-4 h-4 text-slate-400" />
           </div>
           <p className="text-2xl font-black">{countViews}</p>
-          <p className="text-[11px] opacity-70 mt-0.5">Pengunjung membuka LP</p>
         </button>
 
         <button
@@ -318,7 +317,6 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
             <ShoppingCart className="w-4 h-4 opacity-80" />
           </div>
           <p className="text-2xl font-black">{countCheckouts}</p>
-          <p className="text-[11px] opacity-80 mt-0.5">Menunggu transfer bayar</p>
         </button>
 
         <button
@@ -336,7 +334,6 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
             <CheckCircle2 className="w-4 h-4 opacity-80" />
           </div>
           <p className="text-2xl font-black">{countPaid}</p>
-          <p className="text-[11px] opacity-80 mt-0.5">Transaksi lunas</p>
         </button>
 
         {/* Tab Gagal Terkirim */}
@@ -355,7 +352,6 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
             <AlertTriangle className="w-4 h-4 text-red-500" />
           </div>
           <p className="text-2xl font-black text-red-600">{countFailedDelivery}</p>
-          <p className="text-[11px] opacity-80 mt-0.5">Butuh kirim ulang</p>
         </button>
       </div>
 
@@ -476,9 +472,6 @@ Ada yang bisa kami bantu seputar materi digital Anda?`;
             <Users className="w-10 h-10 mx-auto mb-2 text-slate-300" />
             <p className="text-sm font-semibold text-slate-600">
               Tidak ada data pesanan yang sesuai
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Data leads dan pesanan yang masuk akan otomatis terdata di sini.
             </p>
           </div>
         ) : (
